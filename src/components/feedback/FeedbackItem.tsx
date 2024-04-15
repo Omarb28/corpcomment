@@ -1,5 +1,5 @@
 import { TriangleUpIcon } from "@radix-ui/react-icons";
-import { type TFeedbackItem } from "../lib/types";
+import { type TFeedbackItem } from "../../lib/types";
 
 type FeedbackItemProps = {
   feedbackItem: TFeedbackItem;
