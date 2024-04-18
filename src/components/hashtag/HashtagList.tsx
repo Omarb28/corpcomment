@@ -2,7 +2,7 @@ import HashtagItem from "./HashtagItem";
 
 type HashtagListProps = {
   companyList: string[];
-  setSelectedCompany: (company: string) => void;
+  setSelectedCompany: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export default function HashtagList({

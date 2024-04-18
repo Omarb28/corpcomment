@@ -1,6 +1,6 @@
 type HashtagItemProps = {
   company: string;
-  onSelectCompany: (company: string) => void;
+  onSelectCompany: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export default function HashtagItem({
@@ -11,7 +11,12 @@ export default function HashtagItem({
     <li key={company}>
       <button
         onClick={() => {
-          onSelectCompany(company);
+          onSelectCompany((prev: string) => {
+            if (prev === company) {
+              return "";
+            }
+            return company;
+          });
         }}
       >
         #{company}
