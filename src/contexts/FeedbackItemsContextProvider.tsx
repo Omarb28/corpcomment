@@ -1,5 +1,6 @@
-import { createContext, useEffect, useMemo, useState } from "react";
+import { createContext, useMemo, useState } from "react";
 import { TFeedbackItem } from "../lib/types";
+import { useFeedbackItems } from "../lib/hooks";
 
 type FeedbackItemsContextProviderProps = {
   children: React.ReactNode;
@@ -21,9 +22,13 @@ export const FeedbackItemsContext = createContext<TFeedbackItemsContext | null>(
 export default function FeedbackItemsContextProvider({
   children,
 }: FeedbackItemsContextProviderProps) {
-  const [feedbackItems, setFeedbackItems] = useState<TFeedbackItem[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const {
+    feedbackItems,
+    isLoading,
+    errorMessage,
+    setFeedbackItems,
+    setErrorMessage,
+  } = useFeedbackItems();
   const [selectedCompany, setSelectedCompany] = useState("");
 
   const companyList = useMemo(
@@ -43,15 +48,6 @@ export default function FeedbackItemsContextProvider({
         : feedbackItems,
     [selectedCompany, feedbackItems]
   );
-
-  const handleSelectCompany = (company: string) => {
-    setSelectedCompany((prev: string) => {
-      if (prev === company) {
-        return "";
-      }
-      return company;
-    });
-  };
 
   const handleAddToList = async (text: string) => {
     const company = text
@@ -88,32 +84,14 @@ export default function FeedbackItemsContextProvider({
     }
   };
 
-  const fetchFeedbackItems = async () => {
-    setErrorMessage("");
-    setIsLoading(true);
-
-    try {
-      const response = await fetch(
-        "https://bytegrads.com/course-assets/projects/corpcomment/api/feedbacks"
-      );
-
-      if (!response.ok) {
-        throw new Error();
+  const handleSelectCompany = (company: string) => {
+    setSelectedCompany((prev: string) => {
+      if (prev === company) {
+        return "";
       }
-
-      const data = await response.json();
-
-      setFeedbackItems(data.feedbacks);
-    } catch (error) {
-      setErrorMessage("Something went wrong. Please try again later.");
-    }
-
-    setIsLoading(false);
+      return company;
+    });
   };
-
-  useEffect(() => {
-    fetchFeedbackItems();
-  }, []);
 
   return (
     <FeedbackItemsContext.Provider
@@ -122,8 +100,8 @@ export default function FeedbackItemsContextProvider({
         isLoading,
         errorMessage,
         companyList,
-        handleSelectCompany,
         handleAddToList,
+        handleSelectCompany,
       }}
     >
       {children}
