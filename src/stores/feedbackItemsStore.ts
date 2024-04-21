@@ -1,7 +1,19 @@
 import { create } from "zustand";
 import { TFeedbackItem } from "../lib/types";
 
-export const useFeedbackItemsStore = create((set, get) => ({
+type Store = {
+  feedbackItems: TFeedbackItem[];
+  isLoading: boolean;
+  errorMessage: string;
+  selectedCompany: string;
+  getCompanyList: () => string[];
+  getFilteredFeedbackItems: () => TFeedbackItem[];
+  addItemToList: (text: string) => Promise<void>;
+  selectCompany: (company: string) => void;
+  fetchFeedbackItems: () => Promise<void>;
+};
+
+export const useFeedbackItemsStore = create<Store>((set, get) => ({
   feedbackItems: [],
   isLoading: false,
   errorMessage: "",
@@ -57,13 +69,13 @@ export const useFeedbackItemsStore = create((set, get) => ({
     }));
 
     //setErrorMessage("");
-    set((state) => ({
+    set(() => ({
       errorMessage: "",
     }));
 
     try {
       await fetch(
-        "https://bytegrads.com/course-assets/projects/corpcomment/api/feedbacks",
+        "https://bytegrad.com/course-assets/projects/corpcomment/api/feedbacks",
         {
           method: "POST",
           headers: {
@@ -75,7 +87,7 @@ export const useFeedbackItemsStore = create((set, get) => ({
       );
     } catch (error) {
       //setErrorMessage("Something went wrong. Please try again later.");
-      set((state) => ({
+      set(() => ({
         errorMessage: "Something went wrong. Please try again later.",
       }));
     }
@@ -101,12 +113,12 @@ export const useFeedbackItemsStore = create((set, get) => ({
     const fetchFeedbackItems = async () => {
       //setErrorMessage("");
       //setIsLoading(true);
-      set((state) => ({ errorMessage: "" }));
-      set((state) => ({ isLoading: true }));
+      set(() => ({ errorMessage: "" }));
+      set(() => ({ isLoading: true }));
 
       try {
         const response = await fetch(
-          "https://bytegrads.com/course-assets/projects/corpcomment/api/feedbacks"
+          "https://bytegrad.com/course-assets/projects/corpcomment/api/feedbacks"
         );
 
         if (!response.ok) {
@@ -116,16 +128,16 @@ export const useFeedbackItemsStore = create((set, get) => ({
         const data = await response.json();
 
         //setFeedbackItems(data.feedbacks);
-        set((state) => ({ feedbackItems: data.feedbacks }));
+        set(() => ({ feedbackItems: data.feedbacks }));
       } catch (error) {
         //setErrorMessage("Something went wrong. Please try again later.");
-        set((state) => ({
+        set(() => ({
           errorMessage: "Something went wrong. Please try again later.",
         }));
       }
 
       //setIsLoading(false);
-      set((state) => ({ isLoading: false }));
+      set(() => ({ isLoading: false }));
     };
     fetchFeedbackItems();
   },
